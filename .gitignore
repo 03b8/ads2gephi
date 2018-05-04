@@ -1,0 +1,6 @@
+__pycache__
+tests
+venv
+*.pyc
+ads2gephi.egg-info
+.idea
