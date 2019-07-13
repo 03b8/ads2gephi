@@ -1,9 +1,9 @@
 import ads
 import igraph
 from configparser import ConfigParser
-from sqlalchemy import *
+from sqlalchemy import Table, Column, Integer, String, Float, MetaData, create_engine, text
 from sqlalchemy.sql import select, and_
-from ads.exceptions import *
+from ads.exceptions import APIResponseError
 from difflib import SequenceMatcher
 
 
