@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ads2gephi"
+version = "0.1.0"
+description = "A command line tool for querying and modeling citation networks from the Astrophysical Data System (ADS) in a format compatible with Gephi"
+authors = ["Theo Costea <theo.costea@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+ads = "^0.12.3"
+igraph = "^0.1.11"
+sqlalchemy = "^1.3"
+configparser = "^3.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
