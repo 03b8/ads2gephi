@@ -41,7 +41,7 @@ def test_database_readwrite_citnet():
     """
     db_path = 'tests/ads2gephi_test.db'
     citnet = CitationNetwork()
-    db = Database(db_path, citnet=citnet)
+    db = Database(db_path)
     db.write_citnet_to_db()
     db.citnet = None
     db.read_citnet_from_db()
@@ -229,6 +229,7 @@ def test_citnet_assign_modularity_bibcp_edges(citnet):
 
     }
     assert generated_values == expected_values
+
 
 def test_citnet_author_identity_different():
     """
