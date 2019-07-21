@@ -1,6 +1,7 @@
 import os
 import click
-from ads2gephi import CitationNetwork
+from configparser import ConfigParser
+from ads2gephi.ads2gephi import CitationNetwork, Database
 
 
 @click.command()
@@ -59,32 +60,46 @@ def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity
             print(f'Default year interval for snowball sampling '
                   f'has been set to {start_year}-{end_year}.')
 
+    config = ConfigParser()
+    config.read_file(open(conf_file_path))
+    config_api_key = config['ads_api']['APIKey']
+    config_start_year = config['snowball_default_interval']['StartYear']
+    config_end_year = config['snowball_default_interval']['EndYear']
+    os.environ['ADS_API_KEY'] = config_api_key
+
     # DATA PROCESSING
     print(f'Loading database from {database}')
-    citnet = CitationNetwork(database)
-    citnet.parse_config(conf_file_path)
+    db = Database(database)
+    db.read_citnet_from_db()
+    citnet = db.citnet
     if coreset_sampler:
         print(f'Starting core set (judgement) sampling from bibcodes '
               f'provided in {coreset_sampler.name}')
         with coreset_sampler as file:
-            for line in file:
-                citnet.bibcode_list.append(line[:19])
-        citnet.sample('judgement')
+            citnet.sample_judgement(
+                [line for line in file]
+            )
     if snowball_sampler == 'cit':
         print('Starting snowball sampling based on citation metadata')
-        citnet.snowball['scope'] = 'cit'
-        citnet.sample('snowball')
+        citnet.sample_snowball(
+            year_interval=(config_start_year, config_end_year),
+            scope='cit'
+        )
     elif snowball_sampler == 'ref':
         print('Starting snowball sampling based on reference metadata')
-        citnet.snowball['scope'] = 'ref'
-        citnet.sample('snowball')
+        citnet.sample_snowball(
+            year_interval=(config_start_year, config_end_year),
+            scope='ref'
+        )
     elif snowball_sampler == 'cit+ref':
         print('Starting snowball sampling based on citation and reference metadata')
-        citnet.snowball['scope'] = 'citref'
-        citnet.sample('snowball')
+        citnet.sample_snowball(
+            year_interval=(config_start_year, config_end_year),
+            scope='cit+ref'
+        )
     if edge_generator == 'citnet':
         print('Starting edge generator with regular citation network values')
-        citnet.make_regular_edges('bwd')
+        citnet.make_regular_edges()
     elif edge_generator == 'cocit':
         print('Starting edge generator with co-citation values')
         citnet.make_semsim_edges('cocit')
@@ -94,7 +109,9 @@ def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity
     if modularity:
         print('Initiating modularity assignment')
         citnet.assign_modularity()
-        print('Finished assigning modularity values to existing edges.')
+        print('Finished assigning modularity values to existing nodes')
+
+    db.write_citnet_to_db()
 
 
 if __name__ == '__main__':
