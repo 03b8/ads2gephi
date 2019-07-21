@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "ads2gephi"
-version = "0.1.0"
+version = "0.1.1"
 description = "A command line tool for querying and modeling citation networks from the Astrophysical Data System (ADS) in a format compatible with Gephi"
 authors = ["Theo Costea <theo.costea@gmail.com>"]
 license = "MIT"
+readme = "README.md"
+repository = "https://github.com/03b8/ads2gephi"
+keywords = ["citation network", "network analysis", "astrophysical data system"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -16,9 +19,11 @@ pytest = "^5.0"
 hypothesis = "^4.28"
 
 [tool.poetry.dev-dependencies]
+pytest = "*"
 
 [tool.poetry.scripts]
 ads2gephi = 'ads2gephi.cli:main'
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
