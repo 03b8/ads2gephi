@@ -43,7 +43,6 @@ def test_database_readwrite_citnet():
     citnet = CitationNetwork()
     db = Database(db_path)
     db.write_citnet_to_db()
-    db.citnet = None
     db.read_citnet_from_db()
     assert len(db.citnet) == len(citnet)
     os.remove(db_path)
