@@ -3,10 +3,21 @@ import ads
 from typing import List, Tuple, Iterable
 from difflib import SequenceMatcher
 from igraph import Graph
+from configparser import ConfigParser
 from sqlalchemy import Table, Column, Integer, String, Float, MetaData, create_engine
 from sqlalchemy.sql import select
+from tqdm import tqdm
 
-ADS_API_KEY = os.environ.get('ADS_API_KEY')
+# Load API token from configuration file (or env variable for testing)
+home_dir = os.path.expanduser('~')
+conf_dir_path = os.path.join(home_dir, '.ads2gephi')
+conf_file_path = os.path.join(conf_dir_path, 'ads2gephi.cfg')
+if os.path.isfile(conf_file_path):
+    config = ConfigParser()
+    config.read_file(open(conf_file_path))
+    ADS_API_KEY = config['ads_api']['APIKey']
+else:
+    ADS_API_KEY = os.environ.get('ADS_API_KEY')
 
 
 class Node:
@@ -194,10 +205,11 @@ class CitationNetwork:
                     if start_year <= ref_bibcode[:4] <= end_year and
                     not self.has_node(ref_bibcode)
                 ]
-        any(
-            self.add_node(node)
-            for node in sampled_nodes
-        )
+
+        nodes = tqdm(sampled_nodes)
+        for bibcode in nodes:
+            nodes.set_description(f'Processing {bibcode}')
+            self.add_node(bibcode)
 
     @staticmethod
     def author_is_same(name_1: str, name_2: str) -> bool:
