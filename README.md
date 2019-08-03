@@ -42,7 +42,7 @@ All other querying and modelling options are described in the help page:
 ads2gephi --help
 ```
 
-Once you're finished querying and modeling, fhe database file can be directly imported in Gephi for network visualization and analysis.
+Once you've finished querying and modeling, the database file can be directly imported in Gephi for network visualization and analysis.
 
 ## Special thanks to
 
