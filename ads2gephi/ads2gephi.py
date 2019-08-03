@@ -6,6 +6,7 @@ from igraph import Graph
 from configparser import ConfigParser
 from sqlalchemy import Table, Column, Integer, String, Float, MetaData, create_engine
 from sqlalchemy.sql import select
+from tqdm import tqdm
 
 # Load API token from configuration file (or env variable for testing)
 home_dir = os.path.expanduser('~')
@@ -204,10 +205,11 @@ class CitationNetwork:
                     if start_year <= ref_bibcode[:4] <= end_year and
                     not self.has_node(ref_bibcode)
                 ]
-        any(
-            self.add_node(node)
-            for node in sampled_nodes
-        )
+
+        nodes = tqdm(sampled_nodes)
+        for bibcode in nodes:
+            nodes.set_description(f'Processing {bibcode}')
+            self.add_node(bibcode)
 
     @staticmethod
     def author_is_same(name_1: str, name_2: str) -> bool:
