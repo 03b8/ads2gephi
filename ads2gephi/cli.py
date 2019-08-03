@@ -1,11 +1,13 @@
 import os
+import sys
 import click
+from ads import SearchQuery
+from ads.base import APIResponseError
 from configparser import ConfigParser
-from ads2gephi.ads2gephi import CitationNetwork, Database
 
 
 @click.command()
-@click.version_option(version='0.1.1')
+@click.version_option(version='0.1.2')
 @click.option(
     '--coreset-sampler', '-c',
     type=click.File(),
@@ -50,6 +52,14 @@ def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity
         start_year = click.prompt('Start year', type=str, default='1900')
         end_year = click.prompt('End year', type=str, default='2000')
         os.makedirs(conf_dir_path, exist_ok=True)
+        try:
+            SearchQuery(
+                bibcode='1968IAUS...29...11A',
+                token=key_input
+            ).next()
+        except APIResponseError as error:
+            sys.exit(f'[ERROR] The ADS API refused the key you provided: \n\t{error}')
+
         with open(conf_file_path, 'w+') as file:
             file.write(f'[ads_api]\n'
                        f'apikey = {key_input}\n\n'
@@ -62,10 +72,10 @@ def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity
 
     config = ConfigParser()
     config.read_file(open(conf_file_path))
-    config_api_key = config['ads_api']['APIKey']
     config_start_year = config['snowball_default_interval']['StartYear']
     config_end_year = config['snowball_default_interval']['EndYear']
-    os.environ['ADS_API_KEY'] = config_api_key
+
+    from ads2gephi.ads2gephi import Database
 
     # DATA PROCESSING
     print(f'Loading database from {database}')
