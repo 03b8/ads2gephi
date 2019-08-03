@@ -15,15 +15,6 @@ werkzeug = "*"
 
 [[package]]
 category = "main"
-description = "Disable App Nap on OS X 10.9"
-marker = "sys_platform == \"darwin\""
-name = "appnope"
-optional = false
-python-versions = "*"
-version = "0.1.0"
-
-[[package]]
-category = "main"
 description = "Atomic file writes."
 name = "atomicwrites"
 optional = false
@@ -37,14 +28,6 @@ name = "attrs"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "19.1.0"
-
-[[package]]
-category = "main"
-description = "Specifications for callback functions passed in to an API"
-name = "backcall"
-optional = false
-python-versions = "*"
-version = "0.1.0"
 
 [[package]]
 category = "main"
@@ -89,30 +72,11 @@ version = "3.7.4"
 
 [[package]]
 category = "main"
-description = "Better living through Python with decorators"
-name = "decorator"
-optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*"
-version = "4.4.0"
-
-[[package]]
-category = "main"
 description = "HTTP client mock for Python"
 name = "httpretty"
 optional = false
 python-versions = "*"
 version = "0.8.10"
-
-[[package]]
-category = "main"
-description = "A library for property based testing"
-name = "hypothesis"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "4.28.2"
-
-[package.dependencies]
-attrs = ">=16.0.0"
 
 [[package]]
 category = "main"
@@ -124,65 +88,14 @@ version = "2.8"
 
 [[package]]
 category = "main"
-description = "View graph data structures in the IPython notebook."
-name = "igraph"
-optional = false
-python-versions = "*"
-version = "0.1.11"
-
-[package.dependencies]
-ipython = "*"
-
-[[package]]
-category = "main"
 description = "Read metadata from Python packages"
 name = "importlib-metadata"
 optional = false
 python-versions = ">=2.7,!=3.0,!=3.1,!=3.2,!=3.3"
-version = "0.18"
+version = "0.19"
 
 [package.dependencies]
 zipp = ">=0.5"
-
-[[package]]
-category = "main"
-description = "IPython: Productive Interactive Computing"
-name = "ipython"
-optional = false
-python-versions = ">=3.5"
-version = "7.6.1"
-
-[package.dependencies]
-appnope = "*"
-backcall = "*"
-colorama = "*"
-decorator = "*"
-jedi = ">=0.10"
-pexpect = "*"
-pickleshare = "*"
-prompt-toolkit = ">=2.0.0,<2.1.0"
-pygments = "*"
-setuptools = ">=18.5"
-traitlets = ">=4.2"
-
-[[package]]
-category = "main"
-description = "Vestigial utilities from IPython"
-name = "ipython-genutils"
-optional = false
-python-versions = "*"
-version = "0.2.0"
-
-[[package]]
-category = "main"
-description = "An autocompletion tool for Python that can be used for text editors."
-name = "jedi"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "0.14.1"
-
-[package.dependencies]
-parso = ">=0.5.0"
 
 [[package]]
 category = "main"
@@ -209,39 +122,12 @@ description = "Core utilities for Python packages"
 name = "packaging"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "19.0"
+version = "19.1"
 
 [package.dependencies]
+attrs = "*"
 pyparsing = ">=2.0.2"
 six = "*"
-
-[[package]]
-category = "main"
-description = "A Python Parser"
-name = "parso"
-optional = false
-python-versions = "*"
-version = "0.5.1"
-
-[[package]]
-category = "main"
-description = "Pexpect allows easy control of interactive console applications."
-marker = "sys_platform != \"win32\""
-name = "pexpect"
-optional = false
-python-versions = "*"
-version = "4.7.0"
-
-[package.dependencies]
-ptyprocess = ">=0.5"
-
-[[package]]
-category = "main"
-description = "Tiny 'shelve'-like database with concurrency support"
-name = "pickleshare"
-optional = false
-python-versions = "*"
-version = "0.7.5"
 
 [[package]]
 category = "main"
@@ -256,27 +142,6 @@ importlib-metadata = ">=0.12"
 
 [[package]]
 category = "main"
-description = "Library for building powerful interactive command lines in Python"
-name = "prompt-toolkit"
-optional = false
-python-versions = "*"
-version = "2.0.9"
-
-[package.dependencies]
-six = ">=1.9.0"
-wcwidth = "*"
-
-[[package]]
-category = "main"
-description = "Run a subprocess in a pseudo terminal"
-marker = "sys_platform != \"win32\""
-name = "ptyprocess"
-optional = false
-python-versions = "*"
-version = "0.6.0"
-
-[[package]]
-category = "main"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
 name = "py"
 optional = false
@@ -285,19 +150,11 @@ version = "1.8.0"
 
 [[package]]
 category = "main"
-description = "Pygments is a syntax highlighting package written in Python."
-name = "pygments"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "2.4.2"
-
-[[package]]
-category = "main"
 description = "Python parsing module"
 name = "pyparsing"
 optional = false
-python-versions = "*"
-version = "2.4.1"
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "2.4.2"
 
 [[package]]
 category = "main"
@@ -317,6 +174,14 @@ packaging = "*"
 pluggy = ">=0.12,<1.0"
 py = ">=1.5.0"
 wcwidth = "*"
+
+[[package]]
+category = "main"
+description = "High performance graph data structures and algorithms"
+name = "python-igraph"
+optional = false
+python-versions = "*"
+version = "0.7.1.post6"
 
 [[package]]
 category = "main"
@@ -346,20 +211,7 @@ description = "Database Abstraction Library"
 name = "sqlalchemy"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.3.5"
-
-[[package]]
-category = "main"
-description = "Traitlets Python config system"
-name = "traitlets"
-optional = false
-python-versions = "*"
-version = "4.3.2"
-
-[package.dependencies]
-decorator = "*"
-ipython-genutils = "*"
-six = "*"
+version = "1.3.6"
 
 [[package]]
 category = "main"
@@ -394,46 +246,32 @@ python-versions = ">=2.7"
 version = "0.5.2"
 
 [metadata]
-content-hash = "950f7bca8e8af8eadb6f2312c29004e511fe2a2d73ce0d55d8310d9ce675f6fb"
+content-hash = "6657b4b47eee67c371e178b6af817d4a02311b1c7b1fd0462ca9241f46b58576"
 python-versions = "^3.6"
 
 [metadata.hashes]
 ads = ["ce523f266f6b815bf1d6371b6e7791b4d10989ebe743681b27bd54301f7cdcc9"]
-appnope = ["5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0", "8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"]
 atomicwrites = ["03472c30eb2c5d1ba9227e4c2ca66ab8287fbfbbda3888aa93dc2e28fc6811b4", "75a9445bac02d8d058d5e1fe689654ba5a6556a1dfd8ce6ec55a0ed79866cfa6"]
 attrs = ["69c0dbf2ed392de1cb5ec704444b08a5ef81680a61cb899dc08127123af36a79", "f0b870f674851ecbfbbbd364d6b5cbdff9dcedbc7f3f5e18a6891057f21fe399"]
-backcall = ["38ecd85be2c1e78f77fd91700c76e14667dc21e2713b63876c0eb901196e01e4", "bbbf4b1e5cd2bdb08f915895b51081c041bac22394fdfcfdfbe9f14b77c08bf2"]
 certifi = ["046832c04d4e752f37383b628bc601a7ea7211496b4638f6514d0e5b9acc4939", "945e3ba63a0b9f577b1395204e13c3a231f9bc0223888be653286534e5873695"]
 chardet = ["84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae", "fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"]
 click = ["2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13", "5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"]
 colorama = ["05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d", "f8ac84de7840f5b9c4e3347b3c1eaa50f7e49c2b07596221daec5edaabbd7c48"]
 configparser = ["8be81d89d6e7b4c0d4e44bcc525845f6da25821de80cb5e06e7e0238a2899e32", "da60d0014fd8c55eb48c1c5354352e363e2d30bbf7057e5e171a468390184c75"]
-decorator = ["86156361c50488b84a3f148056ea716ca587df2f0de1d34750d35c21312725de", "f069f3a01830ca754ba5258fde2278454a0b5b79e0d7f5c13b3b97e57d4acff6"]
 httpretty = ["474a72722d66841f0e59cee285d837e1c6263be5be7bf2f8e824fc849a99adda", "77cbd62e20cb47f1c66125531aedcb80c3141dc10c5b24779389693cfc8bc3a2"]
-hypothesis = ["4da34bfc2bc8bfbda7fccbc38a1ca8e906c1a31b273805d1df435b1393859947", "8564107158c6853a990c769d5155180a51c6db49c32b5eec6f6960671fde3280"]
 idna = ["c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407", "ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"]
-igraph = ["96db2b3f080223bd5f04439fa645381076361d7c99f6349037cdda84934d8a50", "c5808e60b048c8cd2ade7f9825879e3119e5da1ec343ada6626b15a3a024e5e2"]
-importlib-metadata = ["6dfd58dfe281e8d240937776065dd3624ad5469c835248219bd16cf2e12dbeb7", "cb6ee23b46173539939964df59d3d72c3e0c1b5d54b84f1d8a7e912fe43612db"]
-ipython = ["11067ab11d98b1e6c7f0993506f7a5f8a91af420f7e82be6575fcb7a6ca372a0", "60bc55c2c1d287161191cc2469e73c116d9b634cff25fe214a43cba7cec94c79"]
-ipython-genutils = ["72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8", "eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8"]
-jedi = ["53c850f1a7d3cfcd306cc513e2450a54bdf5cacd7604b74e42dd1f0758eaaf36", "e07457174ef7cb2342ff94fa56484fe41cec7ef69b0059f01d3f812379cb6f7c"]
+importlib-metadata = ["23d3d873e008a513952355379d93cbcab874c58f4f034ff657c7a87422fa64e8", "80d2de76188eabfbfcf27e6a37342c2827801e59c4cc14b0371c56fed43820e3"]
 mock = ["83657d894c90d5681d62155c82bda9c1187827525880eda8ff5df4ec813437c3", "d157e52d4e5b938c550f39eb2fd15610db062441a9c2747d3dbfa9298211d0f8"]
 more-itertools = ["409cd48d4db7052af495b09dec721011634af3753ae1ef92d2b32f73a745f832", "92b8c4b06dac4f0611c0729b2f2ede52b2e1bac1ab48f089c7ddc12e26bb60c4"]
-packaging = ["0c98a5d0be38ed775798ece1b9727178c4469d9c3b4ada66e8e6b7849f8732af", "9e1cbf8c12b1f1ce0bb5344b8d7ecf66a6f8a6e91bcb0c84593ed6d3ab5c4ab3"]
-parso = ["63854233e1fadb5da97f2744b6b24346d2750b85965e7e399bec1620232797dc", "666b0ee4a7a1220f65d367617f2cd3ffddff3e205f3f16a0284df30e774c2a9c"]
-pexpect = ["2094eefdfcf37a1fdbfb9aa090862c1a4878e5c7e0e7e7088bdb511c558e5cd1", "9e2c1fd0e6ee3a49b28f95d4b33bc389c89b20af6a1255906e90ff1262ce62eb"]
-pickleshare = ["87683d47965c1da65cdacaf31c8441d12b8044cdec9aca500cd78fc2c683afca", "9649af414d74d4df115d5d718f82acb59c9d418196b7b4290ed47a12ce62df56"]
+packaging = ["a7ac867b97fdc07ee80a8058fe4435ccd274ecc3b0ed61d852d7d53055528cf9", "c491ca87294da7cc01902edbe30a5bc6c4c28172b5138ab4e4aa1b9d7bfaeafe"]
 pluggy = ["0825a152ac059776623854c1543d65a4ad408eb3d33ee114dff91e57ec6ae6fc", "b9817417e95936bf75d85d3f8767f7df6cdde751fc40aed3bb3074cbcb77757c"]
-prompt-toolkit = ["11adf3389a996a6d45cc277580d0d53e8a5afd281d0c9ec71b28e6f121463780", "2519ad1d8038fd5fc8e770362237ad0364d16a7650fb5724af6997ed5515e3c1", "977c6583ae813a37dc1c2e1b715892461fcbdaa57f6fc62f33a528c4886c8f55"]
-ptyprocess = ["923f299cc5ad920c68f2bc0bc98b75b9f838b93b599941a6b63ddbc2476394c0", "d7cc528d76e76342423ca640335bd3633420dc1366f258cb31d05e865ef5ca1f"]
 py = ["64f65755aee5b381cea27766a3a147c3f15b9b6b9ac88676de66ba2ae36793fa", "dc639b046a6e2cff5bbe40194ad65936d6ba360b52b3c3fe1d08a82dd50b5e53"]
-pygments = ["71e430bc85c88a430f000ac1d9b331d2407f681d6f6aec95e8bcfbc3df5b0127", "881c4c157e45f30af185c1ffe8d549d48ac9127433f2c380c24b84572ad66297"]
-pyparsing = ["530d8bf8cc93a34019d08142593cf4d78a05c890da8cf87ffa3120af53772238", "f78e99616b6f1a4745c0580e170251ef1bbafc0d0513e270c4bd281bf29d2800"]
+pyparsing = ["6f98a7b9397e206d78cc01df10131398f1c8b8510a2f4d97d9abd82e1aacdd80", "d9338df12903bbf5d65a0e4e87c2161968b10d2e489652bb47001d82a9b028b4"]
 pytest = ["6ef6d06de77ce2961156013e9dff62f1b2688aa04d0dc244299fe7d67e09370d", "a736fed91c12681a7b34617c8fcefe39ea04599ca72c608751c31d89579a3f77"]
+python-igraph = ["27c3e787c3513edfa563cf695cf284b6b73a4627f13ce7d06fb39376a37df763", "a5ea42790a077eadb3d1e8f82edc47516fea4a2b26bbf52bfc148370fe0fe676", "d83039ebdbd5a58bdd13aedddf2994c53f40dcba91e5a272293c85d812bf40bb"]
 requests = ["11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4", "9cf5292fcd0f598c671cfc1e0d7d1a7f13bb8085e9a590f48c010551dc6c4b31"]
 six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"]
-sqlalchemy = ["c30925d60af95443458ebd7525daf791f55762b106049ae71e18f8dd58084c2f"]
-traitlets = ["9c4bd2d267b7153df9152698efb1050a5d84982d3384a37b2c1f7723ba3e7835", "c6cb5e6f57c5a9bdaa40fa71ce7b4af30298fbab9ece9815b5d995ab6217c7d9"]
+sqlalchemy = ["217e7fc52199a05851eee9b6a0883190743c4fb9c8ac4313ccfceaffd852b0ff"]
 urllib3 = ["b246607a25ac80bedac05c6f282e3cdaf3afb65420fd024ac94435cabe6e18d1", "dbe59173209418ae49d485b87d1681aefa36252ee85884c31346debd19463232"]
 wcwidth = ["3df37372226d6e63e1b1e1eda15c594bca98a22d33a23832a90998faa96bc65e", "f4ebe71925af7b40a864553f761ed559b43544f8f71746c2d756c7fe788ade7c"]
 werkzeug = ["87ae4e5b5366da2347eb3116c0e6c681a0e939a33b2805e2c0cbd282664932c4", "a13b74dd3c45f758d4ebdb224be8f1ab8ef58b3c0ffc1783a8c7d9f4f50227e6"]

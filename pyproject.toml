@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ads2gephi"
-version = "0.1.1"
+version = "0.1.2rc1"
 description = "A command line tool for querying and modeling citation networks from the Astrophysical Data System (ADS) in a format compatible with Gephi"
 authors = ["Theo Costea <theo.costea@gmail.com>"]
 license = "MIT"
@@ -11,12 +11,11 @@ keywords = ["citation network", "network analysis", "astrophysical data system"]
 [tool.poetry.dependencies]
 python = "^3.6"
 ads = "^0.12.3"
-igraph = "^0.1.11"
 sqlalchemy = "^1.3"
 configparser = "^3.7"
 click = "^7.0"
 pytest = "^5.0"
-hypothesis = "^4.28"
+python-igraph = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
