@@ -4,7 +4,7 @@ from typing import List, Tuple, Iterable
 from difflib import SequenceMatcher
 from igraph import Graph
 from configparser import ConfigParser
-from sqlalchemy import Table, Column, Integer, String, Float, MetaData, create_engine
+from sqlalchemy import Table, Column, Integer, String, Float, Boolean, MetaData, create_engine
 from sqlalchemy.sql import select
 from tqdm import tqdm
 
@@ -25,7 +25,7 @@ class Node:
     A node representing a single publication in the citation network
     """
 
-    def __init__(self, bibcode: str = None, db_article: ads.search.Article = None):
+    def __init__(self, bibcode: str = None, db_article: ads.search.Article = None, judgement: bool = False):
         """
         Create new publication node
         :param bibcode: A bibcode to be queried from ADS
@@ -41,6 +41,7 @@ class Node:
             )
             self._article = _query.next()
             self._modularity_id: int = 0
+        self.judgement = judgement
 
     @property
     def modularity_id(self) -> int:
@@ -131,7 +132,7 @@ class CitationNetwork:
         """
         self._edges = edges
 
-    def add_node(self, bibcode: str = None, db_node: Node = None) -> None:
+    def add_node(self, bibcode: str = None, db_node: Node = None, judgement: bool = False) -> None:
         """
         Add a node to the citation network using its bibcode
         :param bibcode: A bibcode to be queried from ADS
@@ -141,7 +142,7 @@ class CitationNetwork:
         if self.has_node(bibcode):
             return
         if bibcode:
-            self._nodes.append(Node(bibcode))
+            self._nodes.append(Node(bibcode, judgement=judgement))
         elif db_node:
             self._nodes.append(db_node)
 
@@ -164,6 +165,16 @@ class CitationNetwork:
                 return True
         return False
 
+    def node_is_judgement(self, bibcode: str) -> bool:
+        """
+        Check if a node was added via judgement sampling
+        :param bibcode:
+        """
+        for node in self._nodes:
+            if bibcode == node.bibcode:
+                return node.judgement
+        return ValueError(f"There is no node with bibcode {bibcode} in the sampled network.")
+
     def has_edge(self, edge: Tuple[str, str, int]) -> bool:
         """
         Check if an edge exists in the network.
@@ -181,7 +192,7 @@ class CitationNetwork:
         :param bibcodes:
         """
         for bibcode in bibcodes:
-            self.add_node(bibcode)
+            self.add_node(bibcode, judgement=True)
 
     def sample_snowball(self, year_interval: Tuple[str, str], scope: str) -> None:
         """
@@ -336,10 +347,9 @@ class Database:
             Column('end', Float),
             Column('citation', String(3000)),
             Column('reference', String(3000)),
-            Column('type', String(2)),
             Column('ordervar', Float),
             Column('cluster_id', Integer),
-            Column('cluster_id', Integer)
+            Column('judgement', String(8))
         )
         self._edges = Table(
             'edges',
@@ -392,11 +402,13 @@ class Database:
                     ordervar=(int(node.year) - 1900) / 100,
                     citation='; '.join(node.citation_bibcodes),
                     reference='; '.join(node.reference_bibcodes),
-                    cluster_id=node.modularity_id
+                    cluster_id=node.modularity_id,
+                    judgement=str(node.judgement)
                 )
                 self._conn.execute(insertion)
         for edge in self.citnet.edges:
-            if not self.edge_in_db(edge):
+            # This filters out edges whose source node doesn't belong to the judgement sample
+            if not self.edge_in_db(edge) and self.citnet.node_is_judgement(edge[0]):
                 insertion = self._edges.insert().values(
                     source=edge[0],
                     target=edge[1],
