@@ -408,6 +408,7 @@ class Database:
                 self._conn.execute(insertion)
         for edge in self.citnet.edges:
             # This filters out edges whose source node doesn't belong to the judgement sample
+            # TODO: Consider making this an option to be toggled from the CLI
             if not self.edge_in_db(edge) and self.citnet.node_is_judgement(edge[0]):
                 insertion = self._edges.insert().values(
                     source=edge[0],
@@ -428,7 +429,7 @@ class Database:
         )
         citnet_nodes = []
         for db_node in db_nodes:
-            db_article = ads.search.Article(
+            db_article = ads.search.Article(  # Is this necessary? Shouldn't db be imported w/o API calls?
                 bibcode=db_node.bibcode,
                 title=[db_node.title],
                 year=db_node.start,
