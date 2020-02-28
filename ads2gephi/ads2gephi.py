@@ -71,8 +71,11 @@ class Node:
     @property
     def title(self) -> str:
         title_list = self._article.title
-        return '; '.join(title_list)
-
+        try:
+    return '; '.join(title_list)
+except:
+    return "N/A"
+        
     @property
     def reference_nodes(self) -> Iterable:
         if self._article.reference:
