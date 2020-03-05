@@ -443,7 +443,7 @@ class Database:
                 citation=db_node.citation.split('; '),
                 reference=db_node.reference.split('; ')
             )
-            citnet_node = Node(db_article=db_article)
+            citnet_node = Node(db_article=db_article, judgement=db_node.judgement)
             citnet_node.modularity_id = db_node.cluster_id
             citnet_nodes.append(citnet_node)
             self.citnet.add_node(db_node=citnet_node)
