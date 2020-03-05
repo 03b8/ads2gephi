@@ -66,12 +66,18 @@ class Node:
     @property
     def authors(self) -> str:
         author_list = self._article.author
-        return '; '.join(author_list)
+        try:
+            return '; '.join(author_list)
+        except TypeError:
+            return 'N/A'
 
     @property
     def title(self) -> str:
         title_list = self._article.title
-        return '; '.join(title_list)
+        try:
+            return '; '.join(title_list)
+        except TypeError:
+            return 'N/A'
 
     @property
     def reference_nodes(self) -> Iterable:
