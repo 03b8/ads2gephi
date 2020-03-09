@@ -8,7 +8,7 @@ from yaspin import yaspin
 
 
 @click.command()
-@click.version_option(version='0.2.4')
+@click.version_option(version='0.3.0')
 @click.option(
     '--coreset-sampler', '-c',
     type=click.File(),
@@ -36,7 +36,12 @@ from yaspin import yaspin
     is_flag=True,
     help='Assign a cluster ID to each node based on the Community Infomap algorithm.'
 )
-def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity):
+@click.option(
+    '--coreset-focus', '-f',
+    is_flag=True,
+    help='Filter out edges whose source node is not part of the core set'
+)
+def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity, coreset_focus):
 
     # CONFIGURATION
     home_dir = os.path.expanduser('~')
@@ -114,20 +119,38 @@ def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity
             scope='cit+ref'
         )
     if edge_generator == 'citnet':
-        loading_message = 'Starting edge generator with regular citation network values'
-        with yaspin(text=loading_message) as spinner:
-            citnet.make_regular_edges()
-            spinner.ok(u'\u2713')
+        if coreset_focus:
+            loading_message = 'Starting edge generator with regular citation network values focused on core set'
+            with yaspin(text=loading_message) as spinner:
+                citnet.make_regular_edges_coreset_focus()
+                spinner.ok(u'\u2713')
+        else:
+            loading_message = 'Starting edge generator with regular citation network values'
+            with yaspin(text=loading_message) as spinner:
+                citnet.make_regular_edges()
+                spinner.ok(u'\u2713')
     elif edge_generator == 'cocit':
-        loading_message = 'Starting edge generator with co-citation values'
-        with yaspin(text=loading_message) as spinner:
-            citnet.make_semsim_edges('cocit')
-            spinner.ok(u'\u2713')
+        if coreset_focus:
+            loading_message = 'Starting edge generator with co-citation values focused on core set'
+            with yaspin(text=loading_message) as spinner:
+                citnet.make_semsim_edges('cocit', coreset_focus=True)
+                spinner.ok(u'\u2713')
+        else:
+            loading_message = 'Starting edge generator with co-citation values'
+            with yaspin(text=loading_message) as spinner:
+                citnet.make_semsim_edges('cocit')
+                spinner.ok(u'\u2713')
     elif edge_generator == 'bibcp':
-        loading_message = 'Starting edge generator with bibliographic coupling values'
-        with yaspin(text=loading_message) as spinner:
-            citnet.make_semsim_edges('bibcp')
-            spinner.ok(u'\u2713')
+        if coreset_focus:
+            loading_message = 'Starting edge generator with bibliographic coupling values focused on core set'
+            with yaspin(text=loading_message) as spinner:
+                citnet.make_semsim_edges('bibcp', coreset_focus=True)
+                spinner.ok(u'\u2713')
+        else:
+            loading_message = 'Starting edge generator with bibliographic coupling values'
+            with yaspin(text=loading_message) as spinner:
+                citnet.make_semsim_edges('bibcp')
+                spinner.ok(u'\u2713')
     if modularity:
         loading_message = 'Initiating modularity assignment'
         with yaspin(text=loading_message) as spinner:

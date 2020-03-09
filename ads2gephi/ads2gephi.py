@@ -271,13 +271,37 @@ class CitationNetwork:
                 for edge in [*adjacent_nodes_cit, *adjacent_nodes_ref]
             )
 
-    def make_semsim_edges(self, measure) -> None:
+    def make_regular_edges_coreset_focus(self) -> None:
+        """
+        Generate edges pointing from citing to cited node, where citing nodes have to be part of the core set
+        """
+        for node in self._nodes:
+            adjacent_nodes_cit = [
+                (adjacent_node_bibcode, node.bibcode, 0)
+                for adjacent_node_bibcode in node.citation_bibcodes
+                if self.has_node(adjacent_node_bibcode) and self.node_is_judgement(adjacent_node_bibcode)
+            ]
+            adjacent_nodes_ref = [
+                (node.bibcode, adjacent_node_bibcode, 0)
+                for adjacent_node_bibcode in node.reference_bibcodes
+                if self.has_node(adjacent_node_bibcode) and node.judgement
+            ]
+            any(
+                self.add_edge(edge)
+                for edge in [*adjacent_nodes_cit, *adjacent_nodes_ref]
+            )
+
+    def make_semsim_edges(self, measure, coreset_focus=False) -> None:
         """
         Generate edges pointing from citing to cited node
         :param measure: Semantic similarity measure: 'cocit' for co-citation
         or bibliographic coupling ('bibcp')
+        :param coreset_focus: Should source nodes be restricted to core set members
         """
-        self.make_regular_edges()
+        if coreset_focus:
+            self.make_regular_edges_coreset_focus()
+        else:
+            self.make_regular_edges()
         graph = Graph(directed=True)
         vertices = [node.bibcode for node in self.nodes]
         graph.add_vertices(vertices)
@@ -415,7 +439,7 @@ class Database:
         for edge in self.citnet.edges:
             # This filters out edges whose target node doesn't belong to the judgement sample
             # TODO: Consider making this an option to be toggled from the CLI
-            if not self.edge_in_db(edge) and self.citnet.node_is_judgement(edge[1]):
+            if not self.edge_in_db(edge):
                 insertion = self._edges.insert().values(
                     source=edge[0],
                     target=edge[1],
