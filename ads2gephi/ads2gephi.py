@@ -4,6 +4,7 @@ from typing import List, Tuple, Iterable
 from difflib import SequenceMatcher
 from igraph import Graph
 from configparser import ConfigParser
+from collections import namedtuple
 from sqlalchemy import Table, Column, Integer, String, Float, Boolean, MetaData, create_engine
 from sqlalchemy.sql import select
 from tqdm import tqdm
@@ -458,8 +459,9 @@ class Database:
             select([self._edges])
         )
         citnet_nodes = []
+        ArticleStub = namedtuple('ArticleStub', ['bibcode', 'title', 'year', 'author', 'citation', 'reference'])
         for db_node in db_nodes:
-            db_article = ads.search.Article(  # Is this necessary? Shouldn't db be imported w/o API calls?
+            article = ArticleStub(
                 bibcode=db_node.bibcode,
                 title=[db_node.title],
                 year=db_node.start,
@@ -467,7 +469,8 @@ class Database:
                 citation=db_node.citation.split('; '),
                 reference=db_node.reference.split('; ')
             )
-            citnet_node = Node(db_article=db_article, judgement=db_node.judgement)
+            judgement = db_node.judgement == 'True'
+            citnet_node = Node(db_article=article, judgement=judgement)
             citnet_node.modularity_id = db_node.cluster_id
             citnet_nodes.append(citnet_node)
             self.citnet.add_node(db_node=citnet_node)
