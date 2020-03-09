@@ -413,9 +413,9 @@ class Database:
                 )
                 self._conn.execute(insertion)
         for edge in self.citnet.edges:
-            # This filters out edges whose source node doesn't belong to the judgement sample
+            # This filters out edges whose target node doesn't belong to the judgement sample
             # TODO: Consider making this an option to be toggled from the CLI
-            if not self.edge_in_db(edge) and self.citnet.node_is_judgement(edge[0]):
+            if not self.edge_in_db(edge) and self.citnet.node_is_judgement(edge[1]):
                 insertion = self._edges.insert().values(
                     source=edge[0],
                     target=edge[1],
