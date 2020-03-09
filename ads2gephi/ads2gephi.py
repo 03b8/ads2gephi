@@ -179,7 +179,7 @@ class CitationNetwork:
         for node in self._nodes:
             if bibcode == node.bibcode:
                 return node.judgement
-        return ValueError(f"There is no node with bibcode {bibcode} in the sampled network.")
+        raise ValueError(f"There is no node with bibcode {bibcode} in the sampled network.")
 
     def has_edge(self, edge: Tuple[str, str, int]) -> bool:
         """
