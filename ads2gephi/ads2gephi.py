@@ -473,7 +473,7 @@ class Database:
             citnet_node = Node(db_article=article, judgement=judgement)
             citnet_node.modularity_id = db_node.cluster_id
             citnet_nodes.append(citnet_node)
-            self.citnet.add_node(db_node=citnet_node)
+            self.citnet.add_node(db_node=citnet_node, judgement=judgement)
         for db_edge in db_edges:
             self.citnet.add_edge(
                 (db_edge.source, db_edge.target, db_edge.weight)
