@@ -379,8 +379,7 @@ class Database:
         self._nodes = Table(
             'nodes',
             self._metadata,
-            Column('id', Integer, primary_key=True),
-            Column('bibcode', String(20)),
+            Column('id', String(20), primary_key=True),
             Column('author', String(255)),
             Column('title', String(255)),
             Column('start', Float),
@@ -395,8 +394,8 @@ class Database:
             'edges',
             self._metadata,
             Column('id', Integer, primary_key=True),
-            Column('source', Integer),
-            Column('target', Integer),
+            Column('source', String(20)),
+            Column('target', String(20)),
             Column('weight', Integer)
         )
         self._metadata.create_all(self._engine)
@@ -411,7 +410,7 @@ class Database:
             select([self._nodes])
         )
         for node in db_nodes:
-            if bibcode == node.bibcode:
+            if bibcode == node.id:
                 return True
         return False
 
