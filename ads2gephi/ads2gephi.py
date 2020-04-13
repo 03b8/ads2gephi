@@ -5,7 +5,7 @@ from difflib import SequenceMatcher
 from igraph import Graph
 from configparser import ConfigParser
 from collections import namedtuple
-from sqlalchemy import Table, Column, Integer, String, Float, Boolean, MetaData, create_engine
+from sqlalchemy import Table, Column, Integer, String, Float, MetaData, create_engine
 from sqlalchemy.sql import select
 from tqdm import tqdm
 
@@ -171,6 +171,15 @@ class CitationNetwork:
             if bibcode == node.bibcode:
                 return True
         return False
+
+    def get_node(self, bibcode: str) -> Node:
+        """
+        Returns the node with the provided bibcode, if it exists in the network
+        :param bibcode:
+        """
+        for node in self._nodes:
+            if bibcode == node.bibcode:
+                return node
 
     def node_is_judgement(self, bibcode: str) -> bool:
         """
@@ -426,7 +435,7 @@ class Database:
         for node in self.citnet.nodes:
             if not self.node_in_db(node.bibcode):
                 insertion = self._nodes.insert().values(
-                    bibcode=node.bibcode,
+                    id=node.bibcode,
                     author=node.authors,
                     title=node.title,
                     start=node.year, end=node.year,
@@ -462,7 +471,7 @@ class Database:
         ArticleStub = namedtuple('ArticleStub', ['bibcode', 'title', 'year', 'author', 'citation', 'reference'])
         for db_node in db_nodes:
             article = ArticleStub(
-                bibcode=db_node.bibcode,
+                bibcode=db_node.id,
                 title=[db_node.title],
                 year=db_node.start,
                 author=db_node.author.split('; '),
