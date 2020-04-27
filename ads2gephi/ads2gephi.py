@@ -36,7 +36,7 @@ class Node:
             self._article = db_article
         elif bibcode:
             _query = ads.SearchQuery(
-                bibcode=bibcode,
+                identifier=bibcode,
                 token=ADS_API_KEY,
                 fl=['bibcode', 'year', 'author', 'title', 'reference', 'citation']
             )
