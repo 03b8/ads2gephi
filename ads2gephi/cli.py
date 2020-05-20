@@ -8,7 +8,7 @@ from yaspin import yaspin
 
 
 @click.command()
-@click.version_option(version='0.3.5')
+@click.version_option(version='0.3.6')
 @click.option(
     '--coreset-sampler', '-c',
     type=click.File(),
