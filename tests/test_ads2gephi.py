@@ -116,7 +116,7 @@ def test_citnet_make_regular_edges(citnet):
     Check if generated regular edges are correct
     """
     citnet.sample_snowball(scope='cit+ref', year_interval=('1963', '2012'))
-    citnet.make_regular_edges()
+    citnet.make_regular_edges(remove_selfcitations=False)
     generated_edges = set(citnet.edges)
     expected_edges = {
         ('2012ASSL..386...11D', '1968IAUS...29...11A', 0),
@@ -166,7 +166,7 @@ def test_citnet_assign_modularity_regular_edges(citnet):
     Check if assigned modularity IDs are correct
     """
     citnet.sample_snowball(scope='cit+ref', year_interval=('1962', '2012'))
-    citnet.make_regular_edges()
+    citnet.make_regular_edges(remove_selfcitations=False)
     citnet.assign_modularity()
     generated_values = {
         (node.bibcode, node.modularity_id)
