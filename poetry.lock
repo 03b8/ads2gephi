@@ -229,7 +229,7 @@ description = "High performance graph data structures and algorithms"
 name = "python-igraph"
 optional = false
 python-versions = "*"
-version = "0.8.2"
+version = "0.7.1.post6"
 
 [[package]]
 category = "main"
