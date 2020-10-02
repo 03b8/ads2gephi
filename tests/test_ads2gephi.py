@@ -31,7 +31,7 @@ def test_database_init():
     """
     db_path = 'tests/ads2gephi_test.db'
     Database(db_path)
-    assert os.path.exists('ads2gephi_test.db')
+    assert os.path.exists('tests/ads2gephi_test.db')
     os.remove(db_path)
 
 
