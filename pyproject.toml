@@ -1,4 +1,4 @@
-0.7.1[tool.poetry]
+[tool.poetry]
 name = "ads2gephi"
 version = "0.3.6"
 description = "A command line tool for querying and modeling citation networks from the Astrophysical Data System (ADS) in a format compatible with Gephi"
