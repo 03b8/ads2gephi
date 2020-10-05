@@ -8,7 +8,7 @@ from yaspin import yaspin
 
 
 @click.command()
-@click.version_option(version='0.3.7')
+@click.version_option(version='0.3.6')
 @click.option(
     '--coreset-sampler', '-c',
     type=click.File(),
@@ -41,12 +41,7 @@ from yaspin import yaspin
     is_flag=True,
     help='Filter out edges whose source node is not part of the core set'
 )
-@click.option(
-    '--remove-selfcitations', '-r',
-    is_flag=True,
-    help='Filter out edges whose citing node is a self-citation (currently only applied in co-citation network)'
-)
-def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity, coreset_focus, remove_selfcitations):
+def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity, coreset_focus):
 
     # CONFIGURATION
     home_dir = os.path.expanduser('~')
@@ -137,17 +132,13 @@ def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity
     elif edge_generator == 'cocit':
         if coreset_focus:
             loading_message = 'Starting edge generator with co-citation values focused on core set'
-            if remove_selfcitations:
-                loading_message += ' (removing self-citations)'
             with yaspin(text=loading_message) as spinner:
-                citnet.make_semsim_edges('cocit', coreset_focus=True, remove_selfcitations=remove_selfcitations)
+                citnet.make_semsim_edges('cocit', coreset_focus=True)
                 spinner.ok(u'\u2713')
         else:
             loading_message = 'Starting edge generator with co-citation values'
-            if remove_selfcitations:
-                loading_message += ' (removing self-citations)'
             with yaspin(text=loading_message) as spinner:
-                citnet.make_semsim_edges('cocit', remove_selfcitations=remove_selfcitations)
+                citnet.make_semsim_edges('cocit')
                 spinner.ok(u'\u2713')
     elif edge_generator == 'bibcp':
         if coreset_focus:
