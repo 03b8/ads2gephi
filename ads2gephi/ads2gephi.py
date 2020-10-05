@@ -36,7 +36,7 @@ class Node:
             self._article = db_article
         elif bibcode:
             _query = ads.SearchQuery(
-                identifier=bibcode,
+                bibcode=bibcode,
                 token=ADS_API_KEY,
                 fl=['bibcode', 'year', 'author', 'title', 'reference', 'citation']
             )
@@ -202,6 +202,27 @@ class CitationNetwork:
                 return True
         return False
 
+    def is_selfcitation(self, citing: str, cited: str) -> bool:
+        """
+        Check if a node is a self-citation
+        :param bibcode:
+        """
+        try:
+            citing_node = self.get_node(citing)
+            cited_node = self.get_node(cited)
+        except:
+            return False
+        try:
+            first_author_citing = citing_node.author_list[0]
+            first_author_cited = cited_node.author_list[0]
+        except:
+            return False
+        try:
+            same_author = self.author_is_same(first_author_citing, first_author_cited)
+        except:
+            same_author = False
+        return same_author
+
     def sample_judgement(self, bibcodes: Iterable[str]) -> None:
         """
         Sample a list of bibcodes
@@ -261,7 +282,7 @@ class CitationNetwork:
             return True
         return False
 
-    def make_regular_edges(self) -> None:
+    def make_regular_edges(self, remove_selfcitations: bool) -> None:
         """
         Generate edges pointing from citing to cited node
         """
@@ -276,12 +297,15 @@ class CitationNetwork:
                 for adjacent_node_bibcode in node.reference_bibcodes
                 if self.has_node(adjacent_node_bibcode)
             ]
+            if remove_selfcitations:
+                adjacent_nodes_cit = [e for e in adjacent_nodes_cit if not self.is_selfcitation(e[0], e[1])]
+                adjacent_nodes_ref = [e for e in adjacent_nodes_ref if not self.is_selfcitation(e[0], e[1])]
             any(
                 self.add_edge(edge)
                 for edge in [*adjacent_nodes_cit, *adjacent_nodes_ref]
             )
 
-    def make_regular_edges_coreset_focus(self) -> None:
+    def make_regular_edges_coreset_focus(self, remove_selfcitations: bool) -> None:
         """
         Generate edges pointing from citing to cited node, where citing nodes have to be part of the core set
         """
@@ -296,12 +320,15 @@ class CitationNetwork:
                 for adjacent_node_bibcode in node.reference_bibcodes
                 if self.has_node(adjacent_node_bibcode) and node.judgement
             ]
+            if remove_selfcitations:
+                adjacent_nodes_cit = [e for e in adjacent_nodes_cit if not self.is_selfcitation(e[0], e[1])]
+                adjacent_nodes_ref = [e for e in adjacent_nodes_ref if not self.is_selfcitation(e[0], e[1])]
             any(
                 self.add_edge(edge)
                 for edge in [*adjacent_nodes_cit, *adjacent_nodes_ref]
             )
 
-    def make_semsim_edges(self, measure, coreset_focus=False) -> None:
+    def make_semsim_edges(self, measure, coreset_focus=False, remove_selfcitations=False) -> None:
         """
         Generate edges pointing from citing to cited node
         :param measure: Semantic similarity measure: 'cocit' for co-citation
@@ -309,9 +336,9 @@ class CitationNetwork:
         :param coreset_focus: Should source nodes be restricted to core set members
         """
         if coreset_focus:
-            self.make_regular_edges_coreset_focus()
+            self.make_regular_edges_coreset_focus(remove_selfcitations)
         else:
-            self.make_regular_edges()
+            self.make_regular_edges(remove_selfcitations)
         graph = Graph(directed=True)
         vertices = [node.bibcode for node in self.nodes]
         graph.add_vertices(vertices)
@@ -326,18 +353,13 @@ class CitationNetwork:
             matrix = graph.bibcoupling()
         else:
             raise ValueError('Measure type not valid.')
-        semsim_edges = [
-            (
-                 vertices[source_vertex_index],
-                 vertices[target_vertex_index],
-                 weight
-            )
-            for source_vertex_index, target_vertices in enumerate(matrix)
-            for target_vertex_index, weight in enumerate(
-                target_vertices[:source_vertex_index]
-            )
-            if source_vertex_index != target_vertex_index and weight > 0
-        ]
+        semsim_edges = []
+        for i1, v1 in enumerate(matrix):
+            for i2, v2 in enumerate(matrix):
+                if matrix[i1][i2] > 0:
+                    index = matrix[i1][i2]
+                    if (vertices[i1], vertices[i2], index) not in semsim_edges:
+                        semsim_edges.append((vertices[i1], vertices[i2], index))
         self._edges = semsim_edges
 
     def assign_modularity(self) -> None:
