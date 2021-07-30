@@ -4,7 +4,8 @@ from typing import List, Tuple, Iterable
 from difflib import SequenceMatcher
 from igraph import Graph
 from configparser import ConfigParser
-from sqlalchemy import Table, Column, Integer, String, Float, Boolean, MetaData, create_engine
+from collections import namedtuple
+from sqlalchemy import Table, Column, Integer, String, Float, MetaData, create_engine
 from sqlalchemy.sql import select
 from tqdm import tqdm
 
@@ -66,12 +67,18 @@ class Node:
     @property
     def authors(self) -> str:
         author_list = self._article.author
-        return '; '.join(author_list)
+        try:
+            return '; '.join(author_list)
+        except TypeError:
+            return 'N/A'
 
     @property
     def title(self) -> str:
         title_list = self._article.title
-        return '; '.join(title_list)
+        try:
+            return '; '.join(title_list)
+        except TypeError:
+            return 'N/A'
 
     @property
     def reference_nodes(self) -> Iterable:
@@ -165,6 +172,15 @@ class CitationNetwork:
                 return True
         return False
 
+    def get_node(self, bibcode: str) -> Node:
+        """
+        Returns the node with the provided bibcode, if it exists in the network
+        :param bibcode:
+        """
+        for node in self._nodes:
+            if bibcode == node.bibcode:
+                return node
+
     def node_is_judgement(self, bibcode: str) -> bool:
         """
         Check if a node was added via judgement sampling
@@ -173,7 +189,7 @@ class CitationNetwork:
         for node in self._nodes:
             if bibcode == node.bibcode:
                 return node.judgement
-        return ValueError(f"There is no node with bibcode {bibcode} in the sampled network.")
+        raise ValueError(f"There is no node with bibcode {bibcode} in the sampled network.")
 
     def has_edge(self, edge: Tuple[str, str, int]) -> bool:
         """
@@ -185,6 +201,27 @@ class CitationNetwork:
             if old_edge == edge:
                 return True
         return False
+
+    def is_selfcitation(self, citing: str, cited: str) -> bool:
+        """
+        Check if a node is a self-citation
+        :param bibcode:
+        """
+        try:
+            citing_node = self.get_node(citing)
+            cited_node = self.get_node(cited)
+        except:
+            return False
+        try:
+            first_author_citing = citing_node.author_list[0]
+            first_author_cited = cited_node.author_list[0]
+        except:
+            return False
+        try:
+            same_author = self.author_is_same(first_author_citing, first_author_cited)
+        except:
+            same_author = False
+        return same_author
 
     def sample_judgement(self, bibcodes: Iterable[str]) -> None:
         """
@@ -245,7 +282,7 @@ class CitationNetwork:
             return True
         return False
 
-    def make_regular_edges(self) -> None:
+    def make_regular_edges(self, remove_selfcitations: bool) -> None:
         """
         Generate edges pointing from citing to cited node
         """
@@ -260,18 +297,48 @@ class CitationNetwork:
                 for adjacent_node_bibcode in node.reference_bibcodes
                 if self.has_node(adjacent_node_bibcode)
             ]
+            if remove_selfcitations:
+                adjacent_nodes_cit = [e for e in adjacent_nodes_cit if not self.is_selfcitation(e[0], e[1])]
+                adjacent_nodes_ref = [e for e in adjacent_nodes_ref if not self.is_selfcitation(e[0], e[1])]
             any(
                 self.add_edge(edge)
                 for edge in [*adjacent_nodes_cit, *adjacent_nodes_ref]
             )
 
-    def make_semsim_edges(self, measure) -> None:
+    def make_regular_edges_coreset_focus(self, remove_selfcitations: bool) -> None:
+        """
+        Generate edges pointing from citing to cited node, where citing nodes have to be part of the core set
+        """
+        for node in self._nodes:
+            adjacent_nodes_cit = [
+                (adjacent_node_bibcode, node.bibcode, 0)
+                for adjacent_node_bibcode in node.citation_bibcodes
+                if self.has_node(adjacent_node_bibcode) and self.node_is_judgement(adjacent_node_bibcode)
+            ]
+            adjacent_nodes_ref = [
+                (node.bibcode, adjacent_node_bibcode, 0)
+                for adjacent_node_bibcode in node.reference_bibcodes
+                if self.has_node(adjacent_node_bibcode) and node.judgement
+            ]
+            if remove_selfcitations:
+                adjacent_nodes_cit = [e for e in adjacent_nodes_cit if not self.is_selfcitation(e[0], e[1])]
+                adjacent_nodes_ref = [e for e in adjacent_nodes_ref if not self.is_selfcitation(e[0], e[1])]
+            any(
+                self.add_edge(edge)
+                for edge in [*adjacent_nodes_cit, *adjacent_nodes_ref]
+            )
+
+    def make_semsim_edges(self, measure, coreset_focus=False, remove_selfcitations=False) -> None:
         """
         Generate edges pointing from citing to cited node
         :param measure: Semantic similarity measure: 'cocit' for co-citation
         or bibliographic coupling ('bibcp')
+        :param coreset_focus: Should source nodes be restricted to core set members
         """
-        self.make_regular_edges()
+        if coreset_focus:
+            self.make_regular_edges_coreset_focus(remove_selfcitations)
+        else:
+            self.make_regular_edges(remove_selfcitations)
         graph = Graph(directed=True)
         vertices = [node.bibcode for node in self.nodes]
         graph.add_vertices(vertices)
@@ -286,18 +353,13 @@ class CitationNetwork:
             matrix = graph.bibcoupling()
         else:
             raise ValueError('Measure type not valid.')
-        semsim_edges = [
-            (
-                 vertices[source_vertex_index],
-                 vertices[target_vertex_index],
-                 weight
-            )
-            for source_vertex_index, target_vertices in enumerate(matrix)
-            for target_vertex_index, weight in enumerate(
-                target_vertices[:source_vertex_index]
-            )
-            if source_vertex_index != target_vertex_index and weight > 0
-        ]
+        semsim_edges = []
+        for i1, v1 in enumerate(matrix):
+            for i2, v2 in enumerate(matrix):
+                if matrix[i1][i2] > 0:
+                    index = matrix[i1][i2]
+                    if (vertices[i1], vertices[i2], index) not in semsim_edges:
+                        semsim_edges.append((vertices[i1], vertices[i2], index))
         self._edges = semsim_edges
 
     def assign_modularity(self) -> None:
@@ -339,8 +401,7 @@ class Database:
         self._nodes = Table(
             'nodes',
             self._metadata,
-            Column('id', Integer, primary_key=True),
-            Column('bibcode', String(20)),
+            Column('id', String(20), primary_key=True),
             Column('author', String(255)),
             Column('title', String(255)),
             Column('start', Float),
@@ -355,8 +416,8 @@ class Database:
             'edges',
             self._metadata,
             Column('id', Integer, primary_key=True),
-            Column('source', Integer),
-            Column('target', Integer),
+            Column('source', String(20)),
+            Column('target', String(20)),
             Column('weight', Integer)
         )
         self._metadata.create_all(self._engine)
@@ -371,7 +432,7 @@ class Database:
             select([self._nodes])
         )
         for node in db_nodes:
-            if bibcode == node.bibcode:
+            if bibcode == node.id:
                 return True
         return False
 
@@ -395,7 +456,7 @@ class Database:
         for node in self.citnet.nodes:
             if not self.node_in_db(node.bibcode):
                 insertion = self._nodes.insert().values(
-                    bibcode=node.bibcode,
+                    id=node.bibcode,
                     author=node.authors,
                     title=node.title,
                     start=node.year, end=node.year,
@@ -407,9 +468,9 @@ class Database:
                 )
                 self._conn.execute(insertion)
         for edge in self.citnet.edges:
-            # This filters out edges whose source node doesn't belong to the judgement sample
+            # This filters out edges whose target node doesn't belong to the judgement sample
             # TODO: Consider making this an option to be toggled from the CLI
-            if not self.edge_in_db(edge) and self.citnet.node_is_judgement(edge[0]):
+            if not self.edge_in_db(edge):
                 insertion = self._edges.insert().values(
                     source=edge[0],
                     target=edge[1],
@@ -428,19 +489,21 @@ class Database:
             select([self._edges])
         )
         citnet_nodes = []
+        ArticleStub = namedtuple('ArticleStub', ['bibcode', 'title', 'year', 'author', 'citation', 'reference'])
         for db_node in db_nodes:
-            db_article = ads.search.Article(  # Is this necessary? Shouldn't db be imported w/o API calls?
-                bibcode=db_node.bibcode,
+            article = ArticleStub(
+                bibcode=db_node.id,
                 title=[db_node.title],
                 year=db_node.start,
                 author=db_node.author.split('; '),
                 citation=db_node.citation.split('; '),
                 reference=db_node.reference.split('; ')
             )
-            citnet_node = Node(db_article=db_article)
+            judgement = db_node.judgement == 'True'
+            citnet_node = Node(db_article=article, judgement=judgement)
             citnet_node.modularity_id = db_node.cluster_id
             citnet_nodes.append(citnet_node)
-            self.citnet.add_node(db_node=citnet_node)
+            self.citnet.add_node(db_node=citnet_node, judgement=judgement)
         for db_edge in db_edges:
             self.citnet.add_edge(
                 (db_edge.source, db_edge.target, db_edge.weight)

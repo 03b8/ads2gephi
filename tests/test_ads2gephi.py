@@ -116,7 +116,7 @@ def test_citnet_make_regular_edges(citnet):
     Check if generated regular edges are correct
     """
     citnet.sample_snowball(scope='cit+ref', year_interval=('1963', '2012'))
-    citnet.make_regular_edges()
+    citnet.make_regular_edges(remove_selfcitations=False)
     generated_edges = set(citnet.edges)
     expected_edges = {
         ('2012ASSL..386...11D', '1968IAUS...29...11A', 0),
@@ -137,13 +137,20 @@ def test_citnet_make_semsim_edges_bibcp(citnet):
     citnet.make_semsim_edges('bibcp')
     generated_edges = set(citnet.edges)
     expected_edges = {
-        ('2012ASSL..386...11D', '2010Ap.....53...42H', 1),
-        ('2012ASSL..386...11D', '2008Ap.....51..313B', 1),
-        ('2012ASSL..386...11D', '1975NW.....62..309F', 1),
-        ('2012ASSL..386...11D', '1968IAUS...29...11A', 1),
-        ('2010Ap.....53...42H', '2008Ap.....51..313B', 1),
-        ('2010Ap.....53...42H', '1975NW.....62..309F', 1),
-        ('2008Ap.....51..313B', '1975NW.....62..309F', 1),
+        ('1968IAUS...29...11A', '2012ASSL..386...11D', 1), 
+        ('2010Ap.....53...42H', '2012ASSL..386...11D', 1), 
+        ('2012ASSL..386...11D', '1975NW.....62..309F', 1), 
+        ('1975NW.....62..309F', '2012ASSL..386...11D', 1), 
+        ('1975NW.....62..309F', '2010Ap.....53...42H', 1), 
+        ('1975NW.....62..309F', '2008Ap.....51..313B', 1), 
+        ('2010Ap.....53...42H', '1975NW.....62..309F', 1), 
+        ('2008Ap.....51..313B', '2010Ap.....53...42H', 1), 
+        ('2008Ap.....51..313B', '2012ASSL..386...11D', 1), 
+        ('2012ASSL..386...11D', '2008Ap.....51..313B', 1), 
+        ('2012ASSL..386...11D', '2010Ap.....53...42H', 1), 
+        ('2010Ap.....53...42H', '2008Ap.....51..313B', 1), 
+        ('2012ASSL..386...11D', '1968IAUS...29...11A', 1), 
+        ('2008Ap.....51..313B', '1975NW.....62..309F', 1)
     }
     assert generated_edges == expected_edges
 
@@ -156,7 +163,8 @@ def test_citnet_make_semsim_edges_cocit(citnet):
     citnet.make_semsim_edges('cocit')
     generated_edges = set(citnet.edges)
     expected_edges = {
-        ('1963RvMP...35..947B', '1968IAUS...29...11A', 1),
+        ('1968IAUS...29...11A', '1963RvMP...35..947B', 1), 
+        ('1963RvMP...35..947B', '1968IAUS...29...11A', 1)
     }
     assert generated_edges == expected_edges
 
@@ -166,7 +174,7 @@ def test_citnet_assign_modularity_regular_edges(citnet):
     Check if assigned modularity IDs are correct
     """
     citnet.sample_snowball(scope='cit+ref', year_interval=('1962', '2012'))
-    citnet.make_regular_edges()
+    citnet.make_regular_edges(remove_selfcitations=False)
     citnet.assign_modularity()
     generated_values = {
         (node.bibcode, node.modularity_id)
@@ -189,20 +197,19 @@ def test_citnet_assign_modularity_cocit_edges(citnet):
     Check if assigned modularity IDs are correct for cocitation edges
     """
     citnet.sample_snowball(scope='cit+ref', year_interval=('1962', '2012'))
-    citnet.make_semsim_edges(measure='cocit')
+    citnet.make_semsim_edges(measure='cocit',remove_selfcitations=False)
     citnet.assign_modularity()
     generated_values = {
         (node.bibcode, node.modularity_id)
         for node in citnet.nodes
     }
     expected_values = {
-        ('1963RvMP...35..947B', 0),
-        ('1968IAUS...29...11A', 0),
-        ('2012ASSL..386...11D', 1),
-        ('2010Ap.....53...42H', 2),
-        ('2008Ap.....51..313B', 3),
-        ('1975NW.....62..309F', 4),
-
+        ('1963RvMP...35..947B', 0), 
+        ('2010Ap.....53...42H', 3), 
+        ('2008Ap.....51..313B', 2), 
+        ('1968IAUS...29...11A', 0), 
+        ('1975NW.....62..309F', 1), 
+        ('2012ASSL..386...11D', 4)
     }
     assert generated_values == expected_values
 
