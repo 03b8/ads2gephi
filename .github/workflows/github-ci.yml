@@ -1,0 +1,22 @@
+name: build-and-test
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install pip
+      run: 'pip install -U pip==20.1.1'
+    - name: Install poetry
+      run: 'pip install poetry==1.1.1'
+    - name: Install ads2gephi dependencies
+      run: 'poetry install'
+    - name: Test with pytest
+      run: 'poetry run pytest'
+      env:
+        ADS_API_KEY: ${{ secrets.ADS_API_KEY }}
