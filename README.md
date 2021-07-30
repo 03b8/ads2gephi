@@ -4,7 +4,7 @@
 
 # ads2gephi
 
-is a command line tool for querying and modeling citation networks from the Astrophysical Data System (ADS) in a format compatible with Gephi, a popular network visualization tool. ads2gephi has been developed at the history of science department of TU Berlin as part of [a research project on the history of extragalactic astronomy](https://gepris.dfg.de/gepris/projekt/289438140?language=en) financed by the German Research Foundation DFG.
+is a command line tool for querying and modeling citation networks from the Astrophysical Data System (ADS) in a format compatible with Gephi, a popular network visualization tool. ads2gephi has been developed at the history of science department of TU Berlin as part of [a research project on the history of extragalactic astronomy](https://gepris.dfg.de/gepris/projekt/289438140?language=en) financed by the German Research Foundation DFG (PI Karin Pelte).
 
 You can install `ads2gephi` from PyPI:
 ```
