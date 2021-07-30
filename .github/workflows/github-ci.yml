@@ -18,3 +18,5 @@ jobs:
       run: 'poetry install'
     - name: Test with pytest
       run: 'poetry run pytest'
+      env:
+        ADS_API_KEY: ${{ secrets.ADS_API_KEY }}
