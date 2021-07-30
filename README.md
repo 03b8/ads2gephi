@@ -1,5 +1,5 @@
 [![PyPI version](https://badge.fury.io/py/ads2gephi.svg)](https://badge.fury.io/py/ads2gephi)
-![build](https://api.travis-ci.org/03b8/ads2gephi.svg?branch=master)
+![CI](https://github.com/03b8/ads2gephi/actions/workflows/github-ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # ads2gephi
