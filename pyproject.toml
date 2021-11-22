@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "ads2gephi"
-version = "0.3.7"
+version = "0.3.8"
 description = "A command line tool for querying and modeling citation networks from the Astrophysical Data System (ADS) in a format compatible with Gephi"
-authors = ["Theo Costea <theo.costea@gmail.com>", "Edwin Henneken <ehenneken@gmail.com>"]
+authors = ["Theo Costea <theo.costea@gmail.com>", "Edwin Henneken <ehenneken@cfa.harvard.edu>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/03b8/ads2gephi"
