@@ -8,7 +8,7 @@ from yaspin import yaspin
 
 
 @click.command()
-@click.version_option(version='0.3.7')
+@click.version_option(version='0.3.8')
 @click.option(
     '--coreset-sampler', '-c',
     type=click.File(),
@@ -127,12 +127,12 @@ def main(coreset_sampler, snowball_sampler, edge_generator, database, modularity
         if coreset_focus:
             loading_message = 'Starting edge generator with regular citation network values focused on core set'
             with yaspin(text=loading_message) as spinner:
-                citnet.make_regular_edges_coreset_focus()
+                citnet.make_regular_edges_coreset_focus(remove_selfcitations)
                 spinner.ok(u'\u2713')
         else:
             loading_message = 'Starting edge generator with regular citation network values'
             with yaspin(text=loading_message) as spinner:
-                citnet.make_regular_edges()
+                citnet.make_regular_edges(remove_selfcitations)
                 spinner.ok(u'\u2713')
     elif edge_generator == 'cocit':
         if coreset_focus:
